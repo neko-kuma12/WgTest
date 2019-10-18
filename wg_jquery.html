@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"/>
+<link rel="stylesheet" type="text/css" href="./css/battle_jquery.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="./js/battle_jquery.js"></script>
+<script src="./js/map.js"></script>
+</head>
+<body>
+<audio id="field-bgm" src="./sound/field.mp3" type="audio/mp3" loop></audio>
+<audio id="battle-bgm" type="audio/mp3" loop></audio>
+<audio id="battle-bgm2" type="audio/mp3" loop></audio>
+<audio id="atk-se" src="./sound/attack.mp3" type="audio/mp3"></audio>
+<audio id="miss-se" src="./sound/miss.mp3" type="audio/mp3"></audio>
+<audio id="cure-se" src="./sound/cure.mp3" type="audio/mp3"></audio>
+<audio id="end-se" src="./sound/end.mp3" type="audio/mp3"></audio>
+<audio id="fanfare-se" src="./sound/fanfare.mp3" type="audio/mp3"></audio>
+<audio id="encount-se" src="./sound/encount.mp3" type="audio/mp3"></audio>
+<audio id="mobatk-se" src="./sound/mobattack.mp3" type="audio/mp3"></audio>
+<audio id="magic-se" src="./sound/magic.mp3" type="audio/mp3"></audio>
+<audio id="sp-se" src="./sound/sp.mp3" type="audio/mp3"></audio>
+<audio id="escape-se" src="./sound/escape.mp3" type="audio/mp3"></audio>
+<audio id="gameover-se" src="./sound/gameover.mp3" type="audio/mp3"></audio>
+
+<div id="main">
+	<div class="hp_block">
+		<p>HP：<span id="hp"></span></p>
+	</div>
+	<div id="prog-bar" class="progress">
+		<div id="hp-bar" class="hp-bar"></div>
+	</div>
+
+	<div class="dmg-wrap">
+		<span id="pop" class="blockcenter"></span>
+	</div>
+
+	<div>
+		<img id="effect" src="./img/magic.png" class="effect">
+	</div>
+
+	<div>
+		<img id="sp-effect1" src="./img/sp.png" class="s-effect1">
+	</div>
+	<div>
+		<img id="sp-effect2" src="./img/sp.png" class="s-effect2">
+	</div>
+	<div>
+		<img id="sp-effect3" src="./img/sp.png" class="s-effect3">
+	</div>
+
+	<div class="img-wrap">
+		<div id="img" class="img-block blockcenter">
+			<img id="mob-img">
+		</div>
+		<div id="img2" class="img-block blockcenter">
+			<img id="mob-img2">
+		</div>
+	</div>
+	<div class="attack-block">
+		<select id="command" name="command">
+			<option value="1">こうげき</option>
+			<option value="2">まほう</option>
+			<option value="3">かいふく</option>
+			<option value="4">ためる</option>
+			<option value="5">にげる</option>
+		</select>
+		<input type="button" id="atk-btn" value="決定">
+		<input type="button" id="retry-btn" value="再戦">
+<!--		<input type="button" id="next-btn" value="次へ"> -->
+<!--		<input type="button" id="save-btn" value="セーブ"> -->
+	</div>
+
+	<div class="my-dmg-wrap">
+		<span id="myPop"></span>
+	</div>
+	<table class="my-block">
+		<tr>
+			<td>
+				<p>レベル：<span class="lebel"></span></p>
+			</td>
+			<td>
+				<div class="hp_block">
+					<p>HP：<span id="myhp"></span></p>
+				</div>
+				<div id="myprog-bar" class="progress">
+					<div id="myhp-bar" class="hp-bar"></div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>経験値：<span class="exp"></span></p>
+			</td>
+			<td>
+				<div class="mp_block">
+					<p>MP：<span id="mymp"></span></p>
+				</div>
+				<div id="myprog-bar2" class="progress">
+					<div id="mymp-bar" class="mp-bar"></div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td>
+				<div class="mp_block">
+					<p>SP</p>
+				</div>
+				<div id="myprog-bar3" class="progress">
+					<div id="mysp-bar" class="sp-bar"></div>
+				</div>
+			</td>
+		</tr>
+	</table>
+	<textarea contenteditable id="message" class="msg-block">
+	</textarea>
+</div>
+<div id="setting">
+<div>
+	<table>
+		<tr>
+			<td><p>戦う敵：<br></td>
+			<td>
+				<select name="mob">
+					<option value="0">おまかせ！</option>
+					<option value="1">精霊</option>
+					<option value="2">悪魔</option>
+					<option value="3">巨人</option>
+					<option value="4">ガイコツ</option>
+					<option value="5">死神</option>
+					<option value="A">ふよふよしたやつ</option>
+					<option value="9999">ボス</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td><p>戦闘BGM：<br></td>
+			<td>
+				<select name="bgm">
+					<option value="0">おまかせ！</option>
+					<option value="1">戦闘A</option>
+					<option value="2">戦闘B</option>
+					<option value="3">戦闘C</option>
+					<option value="4">戦闘D</option>
+					<option value="5">戦闘E</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td><p>戦闘背景：<br></td>
+			<td>
+				<select name="back-img">
+					<option value="0">おまかせ！</option>
+					<option value="1">昼</option>
+					<option value="2">夕方</option>
+					<option value="3">夜</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td><p>HP最小値：</td>
+			<td>
+				<input type="number" min="0" name="hp-range-min"></p>
+			</td>
+		</tr>
+		<tr>
+			<td><p>HP最大値：</td>
+			<td>
+				<input type="number" min="0" name="hp-range-max"></p>
+			</td>
+		</tr>
+		<tr>
+			<td><p>ダメージ最小値：</td>
+			<td>
+				<input type="number" min="0" name="dmg-range-min"></p>
+			</td>
+		</tr>
+		<tr>
+			<td><p>ダメージ最大値：</td>
+			<td>
+				<input type="number" min="0" name="dmg-range-max"></p>
+			</td>
+		</tr>
+	</table>
+	<p>レベル：<span class="lebel"></span></p>
+	<p>経験値：<span class="exp"></span></p>
+	<input type="button" id="init-btn" value="ゲームスタート">
+	<input type="button" id="init-btn2" value="短縮版">
+	<input type="button" id="field-btn" value="フィールドへ">
+	<input type="button" id="del" value="セーブデータ削除">
+<!--
+	<label for="loadBtn">
+	   <input type="file" id="loadBtn"/>
+	</label>
+-->
+	</div>
+</div>
+<div id="encount">
+	<p id="battle-start">戦闘開始</p>
+</div>
+
+<canvas id="canvas"></canvas>
+
+</body>
+</html>
