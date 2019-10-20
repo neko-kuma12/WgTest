@@ -1,5 +1,6 @@
 /* 共通 */
 var backImgNo = '1';                    // 選択した背景の初期値
+var battleMode = 0;                     // 戦闘モードかどうか
 var bgmNo = 'A';                        // 選択した音楽の初期値
 var chgFlg = 0;                         // 敵が変身したか判定するフラグ
 var chgPer = 50;                        // 変身するHPの割合
@@ -11,10 +12,12 @@ var fadeOutTime = 1000;                 // フェードアウトの時間
 var flushCounter = 6;                   // 点滅用カウンター
 var flushInterval = 100;                // 点滅間隔
 var flushTimer;                         // 点滅用タイマー
+var getExpMax = 15;                     // 取得経験値(最大)
+var getExpMin = 1;                      // 取得経験値(最小)
 var hpDngPer = 20;                      // 残HP(瀕死)判定割合
 var hpDngColor = "#dc143c"              // 残HP(瀕死)文字色
 var hpmax = 10000;                      // HPレンジ(最大)
-var hpmin = 3000;                       // HPレンジ(最小)
+var hpmin = 5000;                       // HPレンジ(最小)
 var hpSafeColor = "white"               // 残HP(安全)文字色
 var hpWarnPer = 50;                     // 残HP(注意)判定割合
 var hpWarnColor = "#ffa500";            // 残HP(注意)文字色
@@ -23,6 +26,7 @@ var log = "";                           // メッセージログ
 var spAcm = 10;                         // 攻撃時SP増加量
 var spAcmChar = 50;                     // ためる時SP増加量
 var spMaxFlg = 0;                       // SPがMAXになったか判定するフラグ
+var useMagicMp = 20;                    // まほうで使用するMP量
 
 /* 敵のパラメータ */
 var mhp = 0;                            // 最大HP
@@ -43,17 +47,48 @@ var mySpbar = 0;                        // SPゲージの幅(自分)
 var lebel = 1;                          // レベル
 var exp = 0;                            // 経験値
 var exptable = [
-300,
-700,
-1500,
-3000,
-5000,
-8000,
-15000,
-30000,
-50000,
-80000,
-150000
+11,
+23,
+35,
+52,
+70,
+94,
+137,
+195,
+262,
+359,
+463,
+505
+];
+var myHpTable = [
+10,
+15,
+23,
+35,
+53,
+80,
+120,
+180,
+270,
+405,
+608,
+912,
+1368
+];
+var myMpTable = [
+0,
+8,
+12,
+17,
+24,
+34,
+48,
+68,
+96,
+135,
+189,
+265,
+371
 ];
 
 /* ファイル関連 */
@@ -65,9 +100,22 @@ var mobImgPath = "./img/mob"            // 敵画像
 /*
  初期画面描画処理
 */
-$(function() {
+$(window).on('load', function() {
     // フィールドマップを非表示
     $('#canvas').css('display', 'none');
+    // 設定項目非表示
+    $('#settingArea').css('display', 'none');
+    // レベルと経験値を非表示
+    $('#status').css('display', 'none');
+
+    // 戦闘ボタンを非表示
+    $('#init-btn').css('display', 'none');
+    // 戦闘ボタンを非表示
+    $('#init-btn2').css('display', 'none');
+    // フィールドボタンを非表示
+    $('#field-btn').css('display', 'none');
+    // データ削除ボタンを非表示
+    $('#dataDel-btn').css('display', 'none');
 
     // 魔法エフェクト非表示
     $('#effect').css('visibility', 'hidden');
@@ -76,13 +124,28 @@ $(function() {
     $('#sp-effect2').css('visibility', 'hidden');
     $('#sp-effect3').css('visibility', 'hidden');
 
-    // セーブデータのロード
-    loadData();
+    /**
+     * 戦闘モード選択
+     */
+    $('#battleMode').on('click',function(){
+        // 戦闘モードボタンを非表示
+        $('#battleMode').css('display', 'none');
+        // ストーリーモードボタンを非表示
+        $('#storyMode').css('display', 'none');
+        // 設定項目表示
+        $('#settingArea').css('display', 'block');
+        // 戦闘ボタンを非表示
+        $('#init-btn').css('display', 'block');
+        // 戦闘ボタンを非表示
+        $('#init-btn2').css('display', 'block');
+        battleMode = 1;
+    });
 
     /*
      フィールド表示
     */
-    $('#field-btn').click(function() {
+    $('#field-btn').on('click',function(){
+        settingPhase = 0;
         // 設定画面を非表示
         $('#setting').css('display', 'none');
         // ステータス設定
@@ -96,7 +159,7 @@ $(function() {
     /*
      スタート処理
     */
-    $('#init-btn').click(function() {
+    $('#init-btn').on('click',function(){
         // 入力チェック
         valid();
         // 設定画面を非表示
@@ -113,7 +176,7 @@ $(function() {
     /*
      短縮スタート
     */
-    $('#init-btn2').click(function() {
+    $('#init-btn2').on('click',function(){
         // 入力チェック
         valid();
         // 設定画面を非表示
@@ -126,29 +189,14 @@ $(function() {
     /*
      再戦
     */
-    $('#retry-btn').click(function() {
+    $('#retry-btn').on('click',function(){
         init();
     });
 
     /*
-     次へ
-    */
-/*    $('#next-btn').click(function() {
-        $('#main').css('display', 'none');
-        $('#canvas').css('display', 'block');
-        encountFlg = 0;
-        $('#fanfare-se').get(0).pause();
-        $('#fanfare-se').get(0).currentTime = 0;
-        setTimeout(function() {
-            // フィールドBGM再生
-            $('#field-bgm').get(0).play();
-        }, 100);
-    });*/
-
-    /*
      データ保存
     */
-    $('#save-btn').click(function() {
+    $('#save-btn').on('click',function(){
         var lineArr = [];
         // レベルと経験値を設定
         lineArr[0] = lebel;
@@ -158,22 +206,42 @@ $(function() {
         alert('セーブしました');
     });
 
+    /**
+     * ストーリーモード選択
+     */
+    $('#storyMode').on('click',function(){
+        // セーブデータのロード
+        loadData();
+        // 戦闘モードボタンを非表示
+        $('#battleMode').css('display', 'none');
+        // ストーリーモードボタンを非表示
+        $('#storyMode').css('display', 'none');
+        // レベルと経験値を表示
+        $('#status').css('display', 'block');
+        // データ削除ボタンを表示
+        $('#field-btn').css('display', 'block');
+        // データ削除ボタンを表示
+        $('#dataDel-btn').css('display', 'block');
+    });
+
     /*
      データ削除
     */
-    $('#del').on('click', function() {
+    $('#dataDel-btn').on('click', function() {
         if (!confirm('本当に削除しますか？')) {
             return false;
         } else {
             localStorage.clear();
             alert('セーブデータを削除しました');
+            // セーブデータのロード
+            loadData();
         }
     });
 
     /*
      攻撃ボタン押下処理
     */
-    $('#atk-btn').click(function() {
+    $('#atk-btn').on('click', function() {
         // 連打防止のためいったん攻撃ボタンを非活性
         $('#atk-btn').prop('disabled', 'true');
         // ランダム要素取得
@@ -200,33 +268,37 @@ $(function() {
 
             // ランダムが4なら敵HP回復
             } else if (random1 == 4 && cmd != '9') {
-                // 回復するHP量をランダムで決定
-                var cureHp = getRandom(100, 1000);
-                hp += cureHp;
-                // HP最大値を超えて回復した場合は最大に合わせる
-                if (mhp <= hp) {
-                    hp = mhp;
-                }
-                $('#hp').html(hp + '/' + mhp);
-                // 残HPに応じてHPゲージ変更
-                $('#hp-bar').width(Math.floor((hp / mhp) * 100) + '%');
-                // HP最大値を超えて回復した場合は最大に合わせる
-                if (hpbar <= $('#hp-bar').width()) {
-                    ('#hp-bar').width(hpbar);
-                }
-                // 回復効果音
-                $('#cure-se').get(0).play();
-                log += 'なんと敵のHPが' + cureHp + '回復した！\n';
+                // 戦闘モードの場合
+                if (battleMode === 1) {
+                    // 回復するHP量をランダムで決定
+                    var cureHp = getRandom(100, 1000);
+                    hp += cureHp;
+                    // HP最大値を超えて回復した場合は最大に合わせる
+                    if (mhp <= hp) {
+                        hp = mhp;
+                    }
+                    $('#hp').html(hp + '/' + mhp);
+                    // 残HPに応じてHPゲージ変更
+                    $('#hp-bar').width(Math.floor((hp / mhp) * 100) + '%');
+                    // HP最大値を超えて回復した場合は最大に合わせる
+                    if (hpbar <= $('#hp-bar').width()) {
+                        ('#hp-bar').width(hpbar);
+                    }
+                    // 回復効果音
+                    $('#cure-se').get(0).play();
+                    log += 'なんと敵のHPが' + cureHp + '回復した！\n';
 
-                // 回復量をポップ表示
-                $('#pop').addClass('cure-pop');
-                $('#pop').html(cureHp);
-                // 0.5秒後に消す
-                setTimeout(function() {
-                    $('#pop').html('');
-                    $('#pop').removeClass('cure-pop');
-                }, 500);
-
+                    // 回復量をポップ表示
+                    $('#pop').addClass('cure-pop');
+                    $('#pop').html(cureHp);
+                    // 0.5秒後に消す
+                    setTimeout(function() {
+                        $('#pop').html('');
+                        $('#pop').removeClass('cure-pop');
+                    }, 500);
+                } else {
+                    log += '石につまづいてしまった！\n';
+                }
             } else {
                 // ランダムでダメージ生成
                 var dmg = getRandom(dmgmin, dmgmax);
@@ -269,7 +341,7 @@ $(function() {
                 // 魔法を選択
                 if (cmd == '2') {
                     // MPを減算
-                    myMp -= 50;
+                    myMp -= useMagicMp;
                     if (myMp <= 0) {
                         $('#mymp').html(0 + '/' + myMmp);
                         // MPが尽きたら魔法を使えなくする
@@ -278,7 +350,7 @@ $(function() {
                         $('#mymp').html(myMp + '/' + myMmp);
                     }
                     // 残MPに応じてMPゲージ変更
-                    $('#mymp-bar').width(Math.floor((myMp / myMmp) * 100) + '%');
+                     $('#mymp-bar').width(Math.floor((myMp / myMmp) * 100) + '%');
                 // ひっさつを選択
                 } else if (cmd == '9') {
                     // SPを0にする
@@ -359,12 +431,15 @@ $(function() {
                     chargeSp(spAcm);
                 }
 
-                // 敵の体力が少なくなったら変身する
-                if (oldSetMob != 9999) {
-                    if (chgFlg == 0 && Math.floor((hp / mhp) * 100) < chgPer && hp > 0 && myHp > 0) {
-                        setTimeout(function(){
-                            changeMob();
-                        }, 200);
+                // 戦闘モードの場合
+                if (battleMode === 1) {
+                    // 敵の体力が少なくなったら変身する
+                    if (oldSetMob != 9999) {
+                        if (chgFlg == 0 && Math.floor((hp / mhp) * 100) < chgPer && hp > 0 && myHp > 0) {
+                            setTimeout(function(){
+                                changeMob();
+                            }, 200);
+                        }
                     }
                 }
 
@@ -400,38 +475,43 @@ $(function() {
                     // 攻撃ボタン非表示
                     $('#atk-btn').css('display', 'none');
                     $('#command').css('visibility', 'hidden');
-//                    // 再戦ボタンとセーブボタンを表示
+//                    // 再戦ボタンを表示
 //                    $('#retry-btn').css('display', '');
-//                    $('#save-btn').css('display', '');
-//                    $('#next-btn').css('display', '');
 
                     log += '\n敵を倒した';
                     // 勝利BGM
                     $('#fanfare-se').get(0).play();
 
                     // 経験値をランダムで取得
-                    var getExp = getRandom(10, 1000);
+                    var getExp = getRandom(getExpMin, getExpMax);
                     exp = parseInt(exp) + parseInt(getExp);
                     log += '\n' + getExp + 'の経験値を取得した';
 
-                    // レベルアップ判定
-                    while(true){
-                        if( exptable[lebel - 1] !== undefined ){
-                            var nextLvExp = exptable[lebel - 1];
-                            if(exp >= nextLvExp){
-                                //レベルアップ処理
-                                lebel++;
-                                log += '\nレベルアップ！レベルが' + lebel + 'になった';
+                    // ストーリーーモードの場合
+                    if (battleMode != 1) {
+                        // レベルアップ判定
+                        while(true){
+                            if( exptable[lebel - 1] !== undefined ){
+                                var nextLvExp = exptable[lebel - 1];
+                                if(exp >= nextLvExp){
+                                    //レベルアップ処理
+                                    lebel++;
+                                    log += '\nレベルアップ！レベルが' + lebel + 'になった';
+                                } else {
+                                    break;
+                                }
                             } else {
                                 break;
                             }
-                        } else {
-                            break;
                         }
+                        // データセーブ
+                        saveData();
+                        battleEndFlg = 1;
                     }
-                    // データセーブ
-                    saveData();
-                    battleEndFlg = 1;
+                    // レベルに応じたHP設定
+                    setMaxHp();
+                    // レベルに応じMP設定
+                    setMaxMp();
                 }
             }
 
@@ -591,13 +671,14 @@ $(function() {
                         // 攻撃ボタン非表示
                         $('#atk-btn').css('display', 'none');
                         $('#command').css('visibility', 'hidden');
-                        // 再戦ボタン表示
-                        $('#retry-btn').css('display', '');
-
+                        // 戦闘モードの場合
+                        if (battleMode === 1) {
+                            // 再戦ボタン表示
+                            $('#retry-btn').css('display', '');
+                        }
                         log += '\n敵に倒された・・・';
                         // ゲームオーバーBGM
                         $('#gameover-se').get(0).play();
-                        battleEndFlg = 1;
                     }
                 }
 
@@ -789,8 +870,11 @@ function init() {
     setDamege();
     // 敵のステータス設定
     setMobStatus();
-    // 自分のステータス設定
-    setMyStatus();
+    // 戦闘モード時のみ毎回設定
+    if (battleMode === 1) {
+        // 自分のステータス設定
+        setMyStatus();
+    }
     // 初期化
     reset();
 
@@ -809,6 +893,7 @@ function init() {
         log += '敵が現れた\n';
         $('#message').html(log);
     });
+    settingPhase = 0;
 }
 
 /**
@@ -852,10 +937,8 @@ function reset() {
     $('#atk-btn').css('display', '');
     $('#atk-btn').css('visibility', 'visible');
     $('#command').css('visibility', 'visible');
-    // 再戦ボタンとセーブボタン非表示
+    // 再戦ボタン非表示
     $('#retry-btn').css('display', 'none');
-    $('#save-btn').css('display', 'none');
-    $('#next-btn').css('display', 'none');
 
     // HP、MPの初期化
     $('#hp-bar').width(Math.floor((hp / mhp) * 100) + '%');
@@ -873,6 +956,17 @@ function reset() {
 
     // デフォルト「たたかう」を選択
     $('#command').val('1');
+    // ストーリーモードの場合
+    if (battleMode != 1) {
+        // MPが足りない場合は「まほう」コマンド選択不可
+        if (myMp <= useMagicMp) {
+            $('select#command option[value=2]').remove();
+        }
+        // レベルが低い間は「回復」コマンド選択不可
+        if (lebel <= 5) {
+            $('select#command option[value=3]').remove();
+        }
+    }
     chgFlg = 0;
     escapeFlg = 0;
     log = '';
@@ -907,6 +1001,11 @@ function setBackImg() {
     if (setMob === '9999') {
         imgPath = backImgBoss;
     }
+
+    // ストーリーモードのボス戦
+    if (battleBossFlg === 1) {
+        imgPath = './img/dungeonBack.png'
+    }
     // 画像ファイルパス設定
     $('#main').css('background-image', 'url('+ imgPath +')');
 }
@@ -937,25 +1036,55 @@ function setBattleMusic() {
  * ダメージ設定処理
  */
 function setDamege() {
-    var setDmgMin = Number($('input[name="dmg-range-min"]').val());
-    var setDmgMax = Number($('input[name="dmg-range-max"]').val());
+    // 戦闘モードの場合、入力値とランダムで生成
+    if (battleMode === 1) {
+        var setDmgMin = Number($('input[name="dmg-range-min"]').val());
+        var setDmgMax = Number($('input[name="dmg-range-max"]').val());
 
-    // ダメージ最小値の入力があれば入力値を設定する
-    if (setDmgMin != '') {
-        dmgmin = setDmgMin;
+        // ダメージ最小値の入力があれば入力値を設定する
+        if (setDmgMin != '') {
+            dmgmin = setDmgMin;
+        }
+        // ダメージ最大値の入力があれば入力値を設定する
+        if (setDmgMax != '') {
+            dmgmax = setDmgMax;
+        }
+    // ストーリーモードのボス戦
+    } else if (battleBossFlg === 1) {
+        dmgmin = 30;
+        dmgmax = 100;
+    } else {
+        dmgmin = 1;
+        dmgmax = 5;
     }
-    // ダメージ最大値の入力があれば入力値を設定する
-    if (setDmgMax != '') {
-        dmgmax = setDmgMax;
-    }
+}
+
+/**
+ * 最大HPの設定
+ */
+function setMaxHp() {
+    // レベルに応じたHP設定
+    myMhp = myHpTable[lebel-1];
+
+}
+
+/**
+ * 最大MPの設定
+ */
+function setMaxMp() {
+    // レベルに応じMP設定
+    myMmp = myMpTable[lebel-1];
 }
 
 /**
  * 敵画像設定処理
  */
 function setMobImg() {
-    // 選択した画像を設定
-    setMob = $('[name=mob]').val();
+    // 戦闘モードの場合
+    if (battleMode === 1) {
+        // 選択した画像を設定
+        setMob = $('[name=mob]').val();
+    }
     if (setMob === 'A') {
         setMob = 'A';
     // おまかせの場合
@@ -963,6 +1092,12 @@ function setMobImg() {
         // 敵をランダムで決定
         setMob = getRandom(1, 5);
     }
+
+    // ストーリーモードのボス戦
+    if (battleBossFlg === 1) {
+        setMob = '1';
+    }
+
     oldSetMob = setMob;
     var imgPath = mobImgPath + setMob + ".png";
     // 画像ファイルパス設定
@@ -979,18 +1114,27 @@ function setMobImg() {
  * 敵のステータス設定処理
  */
 function setMobStatus() {
-    var setHpMin = Number($('input[name="hp-range-min"]').val());
-    var setHpMax = Number($('input[name="hp-range-max"]').val());
+    // 戦闘モードの場合、入力値とランダムで生成
+    if (battleMode === 1) {
+        var setHpMin = Number($('input[name="hp-range-min"]').val());
+        var setHpMax = Number($('input[name="hp-range-max"]').val());
 
-    // HP最小値の入力があれば入力値を設定する
-    if (setHpMin != '') {
-        hpmin = setHpMin;
+        // HP最小値の入力があれば入力値を設定する
+        if (setHpMin != '') {
+            hpmin = setHpMin;
+        }
+        // HP最大値の入力があれば入力値を設定する
+        if (setHpMax != '') {
+            hpmax = setHpMax;
+        }
+    // ストーリーモードのボス戦
+    } else if (battleBossFlg === 1) {
+        hpmin = 600;
+        hpmax = 1200;
+    } else {
+        hpmin = 5;
+        hpmax = 10;
     }
-    // HP最大値の入力があれば入力値を設定する
-    if (setHpMax != '') {
-        hpmax = setHpMax;
-    }
-
     // ランダムで敵HP生成
     mhp = getRandom(hpmin, hpmax);
     // 敵HPを設定
@@ -1002,20 +1146,29 @@ function setMobStatus() {
  * 自分のステータス設定処理
  */
 function setMyStatus() {
-    var setHpMin = Number($('input[name="hp-range-min"]').val());
-    var setHpMax = Number($('input[name="hp-range-max"]').val());
+    // 戦闘モードの場合、入力値とランダムで生成
+    if (battleMode === 1) {
+        var setHpMin = Number($('input[name="hp-range-min"]').val());
+        var setHpMax = Number($('input[name="hp-range-max"]').val());
 
-    // HP最小値の入力があれば入力値を設定する
-    if (setHpMin != '') {
-        hpmin = setHpMin;
-    }
-    // HP最大値の入力があれば入力値を設定する
-    if (setHpMax != '') {
-        hpmax = setHpMax;
+        // HP最小値の入力があれば入力値を設定する
+        if (setHpMin != '') {
+            hpmin = setHpMin;
+        }
+        // HP最大値の入力があれば入力値を設定する
+        if (setHpMax != '') {
+            hpmax = setHpMax;
+        }
+
+        // ランダムで自分のHP生成
+        myMhp = getRandom(hpmin, hpmax);
+    } else {
+        // レベルに応じたHP設定
+        myMhp = myHpTable[lebel-1];
+        // レベルに応じMP設定
+        myMmp = myMpTable[lebel-1];
     }
 
-    // ランダムで自分のHP生成
-    myMhp = getRandom(hpmin, hpmax);
     // 自分のHPを設定
     myHp = myMhp;
     $('#myhp').html(myHp + '/' + myMhp);

@@ -6,9 +6,11 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script src="./js/battle_jquery.js"></script>
 <script src="./js/map.js"></script>
+<!--<script src="./js/init.js"></script>-->
 </head>
 <body>
 <audio id="field-bgm" src="./sound/field.mp3" type="audio/mp3" loop></audio>
+<audio id="dungeon-bgm" src="./sound/dungeon.mp3" type="audio/mp3" loop></audio>
 <audio id="battle-bgm" type="audio/mp3" loop></audio>
 <audio id="battle-bgm2" type="audio/mp3" loop></audio>
 <audio id="atk-se" src="./sound/attack.mp3" type="audio/mp3"></audio>
@@ -22,7 +24,11 @@
 <audio id="sp-se" src="./sound/sp.mp3" type="audio/mp3"></audio>
 <audio id="escape-se" src="./sound/escape.mp3" type="audio/mp3"></audio>
 <audio id="gameover-se" src="./sound/gameover.mp3" type="audio/mp3"></audio>
-
+<!--
+<div id="init-div">
+<canvas id="init"></canvas>
+</div>
+-->
 <div id="main">
 	<div class="hp_block">
 		<p>HP：<span id="hp"></span></p>
@@ -67,8 +73,6 @@
 		</select>
 		<input type="button" id="atk-btn" value="決定">
 		<input type="button" id="retry-btn" value="再戦">
-<!--		<input type="button" id="next-btn" value="次へ"> -->
-<!--		<input type="button" id="save-btn" value="セーブ"> -->
 	</div>
 
 	<div class="my-dmg-wrap">
@@ -116,86 +120,94 @@
 	<textarea contenteditable id="message" class="msg-block">
 	</textarea>
 </div>
+
+
 <div id="setting">
-<div>
-	<table>
-		<tr>
-			<td><p>戦う敵：<br></td>
-			<td>
-				<select name="mob">
-					<option value="0">おまかせ！</option>
-					<option value="1">精霊</option>
-					<option value="2">悪魔</option>
-					<option value="3">巨人</option>
-					<option value="4">ガイコツ</option>
-					<option value="5">死神</option>
-					<option value="A">ふよふよしたやつ</option>
-					<option value="9999">ボス</option>
-				</select>
-			</td>
-		</tr>
-		<tr>
-			<td><p>戦闘BGM：<br></td>
-			<td>
-				<select name="bgm">
-					<option value="0">おまかせ！</option>
-					<option value="1">戦闘A</option>
-					<option value="2">戦闘B</option>
-					<option value="3">戦闘C</option>
-					<option value="4">戦闘D</option>
-					<option value="5">戦闘E</option>
-				</select>
-			</td>
-		</tr>
-		<tr>
-			<td><p>戦闘背景：<br></td>
-			<td>
-				<select name="back-img">
-					<option value="0">おまかせ！</option>
-					<option value="1">昼</option>
-					<option value="2">夕方</option>
-					<option value="3">夜</option>
-				</select>
-			</td>
-		</tr>
-		<tr>
-			<td><p>HP最小値：</td>
-			<td>
-				<input type="number" min="0" name="hp-range-min"></p>
-			</td>
-		</tr>
-		<tr>
-			<td><p>HP最大値：</td>
-			<td>
-				<input type="number" min="0" name="hp-range-max"></p>
-			</td>
-		</tr>
-		<tr>
-			<td><p>ダメージ最小値：</td>
-			<td>
-				<input type="number" min="0" name="dmg-range-min"></p>
-			</td>
-		</tr>
-		<tr>
-			<td><p>ダメージ最大値：</td>
-			<td>
-				<input type="number" min="0" name="dmg-range-max"></p>
-			</td>
-		</tr>
-	</table>
-	<p>レベル：<span class="lebel"></span></p>
-	<p>経験値：<span class="exp"></span></p>
-	<input type="button" id="init-btn" value="ゲームスタート">
-	<input type="button" id="init-btn2" value="短縮版">
-	<input type="button" id="field-btn" value="フィールドへ">
-	<input type="button" id="del" value="セーブデータ削除">
-<!--
-	<label for="loadBtn">
-	   <input type="file" id="loadBtn"/>
-	</label>
--->
+	<input type="button" id="battleMode" value="戦闘モード">
+	<input type="button" id="storyMode" value="ストーリーモード">
+	<div>
+		<table id="settingArea">
+			<tr>
+			</tr>
+			<tr>
+				<td><p>戦う敵：<br></td>
+				<td>
+					<select name="mob">
+						<option value="0">おまかせ！</option>
+						<option value="1">精霊</option>
+						<option value="2">悪魔</option>
+						<option value="3">巨人</option>
+						<option value="4">ガイコツ</option>
+						<option value="5">死神</option>
+						<option value="A">ふよふよしたやつ</option>
+						<option value="9999">ボス</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td><p>戦闘BGM：<br></td>
+				<td>
+					<select name="bgm">
+						<option value="0">おまかせ！</option>
+						<option value="1">戦闘A</option>
+						<option value="2">戦闘B</option>
+						<option value="3">戦闘C</option>
+						<option value="4">戦闘D</option>
+						<option value="5">戦闘E</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td><p>戦闘背景：<br></td>
+				<td>
+					<select name="back-img">
+						<option value="0">おまかせ！</option>
+						<option value="1">昼</option>
+						<option value="2">夕方</option>
+						<option value="3">夜</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td><p>HP最小値：</td>
+				<td>
+					<input type="number" min="0" name="hp-range-min"></p>
+				</td>
+			</tr>
+			<tr>
+				<td><p>HP最大値：</td>
+				<td>
+					<input type="number" min="0" name="hp-range-max"></p>
+				</td>
+			</tr>
+			<tr>
+				<td><p>ダメージ最小値：</td>
+				<td>
+					<input type="number" min="0" name="dmg-range-min"></p>
+				</td>
+			</tr>
+			<tr>
+				<td><p>ダメージ最大値：</td>
+				<td>
+					<input type="number" min="0" name="dmg-range-max"></p>
+				</td>
+			</tr>
+		</table>
+		<table id="status">
+			<tr>
+				<td><p>レベル：<span class="lebel"></span></p></td>
+			</tr>
+			<tr>
+				<td><p>経験値：<span class="exp"></span></p></td>
+			</tr>
+		</table>
+		<input type="button" id="init-btn" value="ゲームスタート"><br />
+		<input type="button" id="init-btn2" value="短縮版">
+		<input type="button" id="field-btn" value="フィールドへ"><br />
+		<input type="button" id="dataDel-btn" value="セーブデータ削除">
 	</div>
 </div>
+
 <div id="encount">
 	<p id="battle-start">戦闘開始</p>
 </div>
