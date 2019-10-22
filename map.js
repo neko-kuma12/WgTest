@@ -15,7 +15,7 @@ var encountFlg = 0;
 var encountMax = 100;
 var encountMin = 0;
 var encountRt = 0;
-var flame = 128;
+var flame = 250;
 var key = new Object();
     key.up = false;
     key.down = false;
@@ -114,7 +114,7 @@ var map3 = [
     ["DG11", "DG01", "DG01", "DG01", "DG01", "DG01", "DG12", "DG92", "DG14", "DG14", "DG14", "DG91", "DG92", "DG14", "DG14", "DG14", "DG14", "DG14", "DG14", "DG14", "DG14", "DG14", "DG14", "DG14", "DG14", "DG14", "DG14", "DG91", "DG99", "DG99", "DG99"]
 ]
 
-// ¦–¢g—p
+// â€»æœªä½¿ç”¨
 function clientToCanvas(canvas, clientX, clientY) {
     var cx = clientX - canvas.offsetLeft + document.body.scrollLeft;
     var cy = clientY - canvas.offsetTop + document.body.scrollTop;
@@ -126,34 +126,38 @@ function clientToCanvas(canvas, clientX, clientY) {
 }
 
 /**
- * •`‰æƒƒCƒ“ˆ—
+ * æç”»ãƒ¡ã‚¤ãƒ³å‡¦ç†
  */
 function drawMain(ctx) {
-    // ƒLƒƒƒ“ƒoƒX‚ÌƒNƒŠƒA
+    // ã‚­ãƒ£ãƒ³ãƒã‚¹ã®ã‚¯ãƒªã‚¢
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // ƒ}ƒbƒv•`‰æ
+    // ãƒãƒƒãƒ—æç”»
     drawMap(ctx);
 
-    // ƒvƒŒƒCƒ„[•`‰æ
-//    ctx.drawImage(player, 32, 64, 32, 32, pos_x, pos_y, 32, 32); //¶
-//    ctx.drawImage(player, 126, 32, 32, 32, pos_x, pos_y, 32, 32); //ã
-//    ctx.drawImage(player, 126, 64, 32, 32, pos_x, pos_y, 32, 32); //‰E
-    ctx.drawImage(player,  angle_x - motion, angle_y, 32, 32, pos_x, pos_y, 32, 32); //‰º
+    // æ­©è¡Œå‹•ä½œã®ãŸã‚ã®å‡¦ç†
+    changeMotion();
 
+    // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æç”»
+//    ctx.drawImage(player, 32, 64, 32, 32, pos_x, pos_y, 32, 32); //å·¦
+//    ctx.drawImage(player, 126, 32, 32, 32, pos_x, pos_y, 32, 32); //ä¸Š
+//    ctx.drawImage(player, 126, 64, 32, 32, pos_x, pos_y, 32, 32); //å³
+    ctx.drawImage(player,  angle_x - motion, angle_y, 32, 32, pos_x, pos_y, 32, 32); //ä¸‹
+
+    // ãƒœã‚¹ã‚­ãƒ£ãƒ©æç”»
     if (curMap === map3) {
         ctx.drawImage(mob, 5, 5, 70, 70, 832, 352, 45, 45);
     
     }
 
-    // ƒXƒe[ƒ^•`‰æ
+    // ã‚¹ãƒ†ãƒ¼ã‚¿æç”»
     drawStatus(ctx);
-    // ƒƒbƒZ[ƒW•`‰æ
+    // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸æç”»
     drawMessage(ctx);
 }
 
 /**
- * ƒ}ƒbƒv•`‰æˆ—
+ * ãƒãƒƒãƒ—æç”»å‡¦ç†
  */
 function drawMap(ctx) {
     for (var y = 0; y < curMap.length; y++) {
@@ -200,39 +204,39 @@ function drawMap(ctx) {
             if (curMap[y][x] === 3) ctx.drawImage(mapchip2, 224, 0, 32, 32, 32*x, 32*y, 32, 32);
             if (curMap[y][x] === 4) ctx.drawImage(mapchip2, 192, 192, 32, 32, 32*x, 32*y, 32, 32);
 
-            if (curMap[y][x] === "DG01") ctx.drawImage(mapchipDungeon, 0, 0, 32, 32, 32*x, 32*y, 32, 32);       // ƒ_ƒ“ƒWƒ‡ƒ“’n–Ê
+            if (curMap[y][x] === "DG01") ctx.drawImage(mapchipDungeon, 0, 0, 32, 32, 32*x, 32*y, 32, 32);       // ãƒ€ãƒ³ã‚¸ãƒ§ãƒ³åœ°é¢
 
-            if (curMap[y][x] === "DG02") ctx.drawImage(mapchipDungeon2, 32, 64, 32, 32, 32*x, 32*y, 32, 32);    // ƒ_ƒ“ƒWƒ‡ƒ“•Ç(³–Ê)ã•”
-            if (curMap[y][x] === "DG03") ctx.drawImage(mapchipDungeon2, 32, 96, 32, 32, 32*x, 32*y, 32, 32);    // ƒ_ƒ“ƒWƒ‡ƒ“•Ç(³–Ê)’†•”
-            if (curMap[y][x] === "DG04") ctx.drawImage(mapchipDungeon2, 32, 128, 32, 32, 32*x, 32*y, 32, 32);   // ƒ_ƒ“ƒWƒ‡ƒ“•Ç(³–Ê)‰º•”
+            if (curMap[y][x] === "DG02") ctx.drawImage(mapchipDungeon2, 32, 64, 32, 32, 32*x, 32*y, 32, 32);    // ãƒ€ãƒ³ã‚¸ãƒ§ãƒ³å£(æ­£é¢)ä¸Šéƒ¨
+            if (curMap[y][x] === "DG03") ctx.drawImage(mapchipDungeon2, 32, 96, 32, 32, 32*x, 32*y, 32, 32);    // ãƒ€ãƒ³ã‚¸ãƒ§ãƒ³å£(æ­£é¢)ä¸­éƒ¨
+            if (curMap[y][x] === "DG04") ctx.drawImage(mapchipDungeon2, 32, 128, 32, 32, 32*x, 32*y, 32, 32);   // ãƒ€ãƒ³ã‚¸ãƒ§ãƒ³å£(æ­£é¢)ä¸‹éƒ¨
 
-            if (curMap[y][x] === "DG05") ctx.drawImage(mapchipDungeon2, 64, 64, 32, 32, 32*x, 32*y, 32, 32);    // ƒ_ƒ“ƒWƒ‡ƒ“•Ç(‰E’[)ã•”
-            if (curMap[y][x] === "DG06") ctx.drawImage(mapchipDungeon2, 64, 96, 32, 32, 32*x, 32*y, 32, 32);    // ƒ_ƒ“ƒWƒ‡ƒ“•Ç(‰E’[)’†•”
-            if (curMap[y][x] === "DG07") ctx.drawImage(mapchipDungeon2, 64, 128, 32, 32, 32*x, 32*y, 32, 32);   // ƒ_ƒ“ƒWƒ‡ƒ“•Ç(‰E’[)‰º•”
+            if (curMap[y][x] === "DG05") ctx.drawImage(mapchipDungeon2, 64, 64, 32, 32, 32*x, 32*y, 32, 32);    // ãƒ€ãƒ³ã‚¸ãƒ§ãƒ³å£(å³ç«¯)ä¸Šéƒ¨
+            if (curMap[y][x] === "DG06") ctx.drawImage(mapchipDungeon2, 64, 96, 32, 32, 32*x, 32*y, 32, 32);    // ãƒ€ãƒ³ã‚¸ãƒ§ãƒ³å£(å³ç«¯)ä¸­éƒ¨
+            if (curMap[y][x] === "DG07") ctx.drawImage(mapchipDungeon2, 64, 128, 32, 32, 32*x, 32*y, 32, 32);   // ãƒ€ãƒ³ã‚¸ãƒ§ãƒ³å£(å³ç«¯)ä¸‹éƒ¨
 
-            if (curMap[y][x] === "DG08") ctx.drawImage(mapchipDungeon2, 0, 64, 32, 32, 32*x, 32*y, 32, 32);     // ƒ_ƒ“ƒWƒ‡ƒ“•Ç(¶’[)ã•”
-            if (curMap[y][x] === "DG09") ctx.drawImage(mapchipDungeon2, 0, 96, 32, 32, 32*x, 32*y, 32, 32);     // ƒ_ƒ“ƒWƒ‡ƒ“•Ç(¶’[)’†•”
-            if (curMap[y][x] === "DG10") ctx.drawImage(mapchipDungeon2, 0, 128, 32, 32, 32*x, 32*y, 32, 32);    // ƒ_ƒ“ƒWƒ‡ƒ“•Ç(¶’[)‰º•”
+            if (curMap[y][x] === "DG08") ctx.drawImage(mapchipDungeon2, 0, 64, 32, 32, 32*x, 32*y, 32, 32);     // ãƒ€ãƒ³ã‚¸ãƒ§ãƒ³å£(å·¦ç«¯)ä¸Šéƒ¨
+            if (curMap[y][x] === "DG09") ctx.drawImage(mapchipDungeon2, 0, 96, 32, 32, 32*x, 32*y, 32, 32);     // ãƒ€ãƒ³ã‚¸ãƒ§ãƒ³å£(å·¦ç«¯)ä¸­éƒ¨
+            if (curMap[y][x] === "DG10") ctx.drawImage(mapchipDungeon2, 0, 128, 32, 32, 32*x, 32*y, 32, 32);    // ãƒ€ãƒ³ã‚¸ãƒ§ãƒ³å£(å·¦ç«¯)ä¸‹éƒ¨
 
-            if (curMap[y][x] === "DG11") ctx.drawImage(mapchipDungeon2, 64, 32, 32, 32, 32*x, 32*y, 32, 32);    // ƒ_ƒ“ƒWƒ‡ƒ“•Ç(¶)
-            if (curMap[y][x] === "DG12") ctx.drawImage(mapchipDungeon2, 0, 32, 32, 32, 32*x, 32*y, 32, 32);     // ƒ_ƒ“ƒWƒ‡ƒ“•Ç(‰E)
+            if (curMap[y][x] === "DG11") ctx.drawImage(mapchipDungeon2, 64, 32, 32, 32, 32*x, 32*y, 32, 32);    // ãƒ€ãƒ³ã‚¸ãƒ§ãƒ³å£(å·¦)
+            if (curMap[y][x] === "DG12") ctx.drawImage(mapchipDungeon2, 0, 32, 32, 32, 32*x, 32*y, 32, 32);     // ãƒ€ãƒ³ã‚¸ãƒ§ãƒ³å£(å³)
 
-            if (curMap[y][x] === "DG13") ctx.drawImage(mapchipDungeon2, 0, 0, 32, 32, 32*x, 32*y, 32, 32);      // ƒ_ƒ“ƒWƒ‡ƒ“•Ç(”w–Ê)¶’[
-            if (curMap[y][x] === "DG14") ctx.drawImage(mapchipDungeon2, 32, 0, 32, 32, 32*x, 32*y, 32, 32);     // ƒ_ƒ“ƒWƒ‡ƒ“•Ç(”w–Ê)’†‰›
-            if (curMap[y][x] === "DG15") ctx.drawImage(mapchipDungeon2, 64, 0, 32, 32, 32*x, 32*y, 32, 32);     // ƒ_ƒ“ƒWƒ‡ƒ“•Ç(”w–Ê)‰E’[
+            if (curMap[y][x] === "DG13") ctx.drawImage(mapchipDungeon2, 0, 0, 32, 32, 32*x, 32*y, 32, 32);      // ãƒ€ãƒ³ã‚¸ãƒ§ãƒ³å£(èƒŒé¢)å·¦ç«¯
+            if (curMap[y][x] === "DG14") ctx.drawImage(mapchipDungeon2, 32, 0, 32, 32, 32*x, 32*y, 32, 32);     // ãƒ€ãƒ³ã‚¸ãƒ§ãƒ³å£(èƒŒé¢)ä¸­å¤®
+            if (curMap[y][x] === "DG15") ctx.drawImage(mapchipDungeon2, 64, 0, 32, 32, 32*x, 32*y, 32, 32);     // ãƒ€ãƒ³ã‚¸ãƒ§ãƒ³å£(èƒŒé¢)å³ç«¯
 
-            if (curMap[y][x] === "DG91") ctx.drawImage(mapchipDungeon2, 192, 0, 32, 32, 32*x, 32*y, 32, 32);    // ƒ_ƒ“ƒWƒ‡ƒ“•“h‚è(¶ã)
-            if (curMap[y][x] === "DG92") ctx.drawImage(mapchipDungeon2, 224, 0, 32, 32, 32*x, 32*y, 32, 32);    // ƒ_ƒ“ƒWƒ‡ƒ“•“h‚è(‰Eã)
-            if (curMap[y][x] === "DG93") ctx.drawImage(mapchipDungeon2, 192, 32, 32, 32, 32*x, 32*y, 32, 32);    // ƒ_ƒ“ƒWƒ‡ƒ“•“h‚è(¶‰º)
-            if (curMap[y][x] === "DG94") ctx.drawImage(mapchipDungeon2, 224, 32, 32, 32, 32*x, 32*y, 32, 32);    // ƒ_ƒ“ƒWƒ‡ƒ“•“h‚è(‰E‰º)
-            if (curMap[y][x] === "DG99") ctx.drawImage(mapchipDungeon2, 32, 32, 32, 32, 32*x, 32*y, 32, 32);    // ƒ_ƒ“ƒWƒ‡ƒ“•“h‚è
+            if (curMap[y][x] === "DG91") ctx.drawImage(mapchipDungeon2, 192, 0, 32, 32, 32*x, 32*y, 32, 32);    // ãƒ€ãƒ³ã‚¸ãƒ§ãƒ³é»’å¡—ã‚Š(å·¦ä¸Š)
+            if (curMap[y][x] === "DG92") ctx.drawImage(mapchipDungeon2, 224, 0, 32, 32, 32*x, 32*y, 32, 32);    // ãƒ€ãƒ³ã‚¸ãƒ§ãƒ³é»’å¡—ã‚Š(å³ä¸Š)
+            if (curMap[y][x] === "DG93") ctx.drawImage(mapchipDungeon2, 192, 32, 32, 32, 32*x, 32*y, 32, 32);   // ãƒ€ãƒ³ã‚¸ãƒ§ãƒ³é»’å¡—ã‚Š(å·¦ä¸‹)
+            if (curMap[y][x] === "DG94") ctx.drawImage(mapchipDungeon2, 224, 32, 32, 32, 32*x, 32*y, 32, 32);   // ãƒ€ãƒ³ã‚¸ãƒ§ãƒ³é»’å¡—ã‚Š(å³ä¸‹)
+            if (curMap[y][x] === "DG99") ctx.drawImage(mapchipDungeon2, 32, 32, 32, 32, 32*x, 32*y, 32, 32);    // ãƒ€ãƒ³ã‚¸ãƒ§ãƒ³é»’å¡—ã‚Š
 
         }
     }
 }
 
 /**
- * Œü‚«•ÏXi‰ºj
+ * å‘ãå¤‰æ›´ï¼ˆä¸‹ï¼‰
  */
 function changeAngleDown() {
     angle_x = 32;
@@ -240,7 +244,7 @@ function changeAngleDown() {
 }
 
 /**
- * Œü‚«•ÏXi¶j
+ * å‘ãå¤‰æ›´ï¼ˆå·¦ï¼‰
  */
 function changeAngleLeft() {
     angle_x = 32;
@@ -248,7 +252,7 @@ function changeAngleLeft() {
 }
 
 /**
- * Œü‚«•ÏXi‰Ej
+ * å‘ãå¤‰æ›´ï¼ˆå³ï¼‰
  */
 function changeAngleRight() {
     angle_x = 126;
@@ -256,7 +260,7 @@ function changeAngleRight() {
 }
 
 /**
- * Œü‚«•ÏXiãj
+ * å‘ãå¤‰æ›´ï¼ˆä¸Šï¼‰
  */
 function changeAngleUp() {
     angle_x = 126;
@@ -264,7 +268,7 @@ function changeAngleUp() {
 }
 
 /**
- * “®‚«•ÏX
+ * å‹•ãå¤‰æ›´
  */
 function changeMotion() {
     if (motion === -32) {
@@ -283,34 +287,34 @@ function changeMotion() {
 }
 
 /**
- * ƒƒbƒZ[ƒW•`‰æˆ—
+ * ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸æç”»å‡¦ç†
  */
 function drawMessage(ctx) {
-    // ƒƒbƒZ[ƒW“à—e‚ª‘¶İ‚µ‚È‚¢ê‡
+    // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å†…å®¹ãŒå­˜åœ¨ã—ãªã„å ´åˆ
     if(!message){
         return;
     }
-    // ƒEƒBƒ“ƒhƒE‚ÌFİ’è
+    // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®è‰²è¨­å®š
     ctx.fillStyle = "rgba(0, 0, 0, 0.75)";
     ctx.fillRect(280, 490, 550, 80);
-    // •¶šƒtƒHƒ“ƒgİ’è
+    // æ–‡å­—ãƒ•ã‚©ãƒ³ãƒˆè¨­å®š
     ctx.font = "12px monospace";
     ctx.fillStyle = "#ffffff";
-    // ƒƒbƒZ[ƒW•`‰æ
+    // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸æç”»
     ctx.fillText(message, 290, 510);
 }
 
 /**
- * ƒXƒe[ƒ^ƒX•`‰æˆ—
+ * ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹æç”»å‡¦ç†
  */
 function drawStatus(ctx) {
-    // ƒXƒe[ƒ^ƒXƒEƒBƒ“ƒhƒE
+    // ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
     ctx.fillStyle = "rgba(0, 0, 0, 0.75)";
     ctx.fillRect(2, 2, 150, 150);
-    // •¶šƒtƒHƒ“ƒgİ’è
+    // æ–‡å­—ãƒ•ã‚©ãƒ³ãƒˆè¨­å®š
     ctx.font = "24px monospace";
     ctx.fillStyle = "#ffffff";
-    // ƒXƒe[ƒ^ƒX‚ğİ’è
+    // ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’è¨­å®š
     ctx.fillText("Lv", 10, 25)
     drawTextR(ctx, lebel,  138, 25);
     ctx.fillText("HP", 10, 50);
@@ -322,7 +326,7 @@ function drawStatus(ctx) {
 }
 
 /**
- * ƒeƒLƒXƒg‰EŠñ‚¹
+ * ãƒ†ã‚­ã‚¹ãƒˆå³å¯„ã›
  */
 function drawTextR(ctx, str, x, y) {
     ctx.textAlign = "right";
@@ -331,54 +335,54 @@ function drawTextR(ctx, str, x, y) {
 }
 
 /**
- * ƒGƒ“ƒJƒEƒ“ƒgˆ—
+ * ã‚¨ãƒ³ã‚«ã‚¦ãƒ³ãƒˆå‡¦ç†
  */
 function encount() {
-    // ƒtƒB[ƒ‹ƒhBGM’â~
+    // ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰BGMåœæ­¢
     $('#field-bgm').get(0).pause();
     $('#field-bgm').get(0).currentTime = 0;
-    // ƒ_ƒ“ƒWƒ‡ƒ“BGM’â~
+    // ãƒ€ãƒ³ã‚¸ãƒ§ãƒ³BGMåœæ­¢
     $('#dungeon-bgm').get(0).pause();
     $('#dungeon-bgm').get(0).currentTime = 0;
-    // ƒtƒB[ƒ‹ƒhƒ}ƒbƒv‚ğ”ñ•\¦
+    // ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ãƒãƒƒãƒ—ã‚’éè¡¨ç¤º
     $('#canvas').css('display', 'none');
-    // í“¬ŠJn‰æ–Ê‚ğ•\¦
+    // æˆ¦é—˜é–‹å§‹ç”»é¢ã‚’è¡¨ç¤º
     $('#encount').css('display', 'block');
     $('#encount').css('background-color', 'black');
-    // í“¬ŠJnŒø‰Ê‰¹
+    // æˆ¦é—˜é–‹å§‹åŠ¹æœéŸ³
     $('#encount-se').get(0).play();
-    // ƒƒbƒZ[ƒW•\¦
+    // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸è¡¨ç¤º
     $('#battle-start').addClass('fadein-start');
-    encountFlg = 1;
     fieldPhase = 0;
 
-    // 2•bŒã‚É‰Šúˆ—ŠJn
+    // 2ç§’å¾Œã«åˆæœŸå‡¦ç†é–‹å§‹
     setTimeout(function(){
         init();
     }, 2000);
 }
 
 /**
- * ƒGƒ“ƒJƒEƒ“ƒg”»’è
+ * ã‚¨ãƒ³ã‚«ã‚¦ãƒ³ãƒˆåˆ¤å®š
  */
 function encountJudge() {
     if (getRandom(encountMin, encountMax) < encountRt) {
-        // ƒGƒ“ƒJƒEƒ“ƒgˆ—
-        encount();
+        message = 'æ•µãŒã‚ã‚‰ã‚ã‚ŒãŸï¼ï¼';
+        // ã‚¨ãƒ³ã‚«ã‚¦ãƒ³ãƒˆå‡¦ç†
+        encountFlg = 1;
     }
 }
 
 /**
- * ‰æ‘œ“Ç‚İ‚İˆ—
+ * ç”»åƒèª­ã¿è¾¼ã¿å‡¦ç†
  */
 function loadImage() {
-    // ƒvƒŒƒCƒ„[‰æ‘œ“Ç‚İ‚İ
+    // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç”»åƒèª­ã¿è¾¼ã¿
     player = new Image();
     player.src = playerImg;
-    // “G‰æ‘œ“Ç‚İ‚İ
+    // æ•µç”»åƒèª­ã¿è¾¼ã¿
     mob = new Image();
     mob.src = mobImg;
-    // ƒ}ƒbƒv‰æ‘œ“Ç‚İ‚İ
+    // ãƒãƒƒãƒ—ç”»åƒèª­ã¿è¾¼ã¿
     mapchip = new Image();
     mapchip.src = fieldImg;
     mapchip2 = new Image();
@@ -394,7 +398,7 @@ function loadImage() {
 }
 
 /**
- * ˆÚ“®‰Â”\”»’è
+ * ç§»å‹•å¯èƒ½åˆ¤å®š
  */
 function movableJudge(y, x) {
     if (curMap[y][x] === 4 || curMap[y][x] === 6 || curMap[y][x] === "DG01") {
@@ -405,12 +409,12 @@ function movableJudge(y, x) {
 }
 
 /**
- * ‰æ–ÊƒTƒCƒYİ’è
+ * ç”»é¢ã‚µã‚¤ã‚ºè¨­å®š
  */
 function setSize() {
     var canvas = $('#canvas').get(0);
 
-    // ƒLƒƒƒ“ƒoƒX‚Ì•‚Æ‚‚³‚ğ•ÏX
+    // ã‚­ãƒ£ãƒ³ãƒã‚¹ã®å¹…ã¨é«˜ã•ã‚’å¤‰æ›´
     $('#canvas').attr('width', window.innerWidth);
     $('#canvas').attr('height', window.innerHeight);
 
@@ -418,20 +422,21 @@ function setSize() {
 }
 
 /**
- * ƒ^ƒCƒ}[ˆ—
+ * ã‚¿ã‚¤ãƒãƒ¼å‡¦ç†
  */
 function timer(ctx) {
     counter++;
-    // í“¬’†‚ÍŒã‘±ˆ—‚ğs‚í‚È‚¢
+    // ã‚¨ãƒ³ã‚«ã‚¦ãƒ³ãƒˆæ™‚ã¯å¾Œç¶šå‡¦ç†ã‚’è¡Œã‚ãªã„
     if (encountFlg === 1) {
         return;
     }
+    // ã‚¨ãƒ³ã‚«ã‚¦ãƒ³ãƒˆå‡¦ç†
+    if (encountFlg === 2) {
+        encountFlg = 0;
+        encount();
+    }
 
-    // ƒ}ƒbƒv‚ÆƒvƒŒƒCƒ„[‚ğ•`‰æ
-    drawMain(ctx);
-    message = "";
-
-    // ƒL[ƒCƒxƒ“ƒg”»’è
+    // ã‚­ãƒ¼ã‚¤ãƒ™ãƒ³ãƒˆåˆ¤å®š
     if (move === 0 ) {
         if (key.left === true) {
             var x = pos_x / 32;
@@ -442,9 +447,8 @@ function timer(ctx) {
                 key.push = 'left';
                 encountJudge();
             }
+            // å·¦å‘ãã«å¤‰æ›´
             changeAngleLeft();
-            changeMotion();
-            angle = 2;
         } else if (key.up === true) {
             var x = pos_x / 32;
             var y = pos_y / 32;
@@ -456,9 +460,8 @@ function timer(ctx) {
                     encountJudge();
                 }
             }
+            // ä¸Šå‘ãã«å¤‰æ›´
             changeAngleUp();
-            changeMotion();
-            angle = 3;
         } else if (key.right === true) {
             var x = pos_x / 32;
             var y = pos_y / 32;
@@ -468,9 +471,8 @@ function timer(ctx) {
                 key.push = 'right';
                 encountJudge();
             }
+            // å³å‘ãã«å¤‰æ›´
             changeAngleRight();
-            changeMotion();
-            angle = 4;
         } else if (key.down === true) {
             var x = pos_x / 32;
             var y = pos_y / 32;
@@ -482,13 +484,12 @@ function timer(ctx) {
                     encountJudge();
                 }
             }
+            // ä¸‹å‘ãã«å¤‰æ›´
             changeAngleDown();
-            changeMotion();
-            angle = 1;
         }
     }
 
-    // À•WˆÚ“®
+    // åº§æ¨™ç§»å‹•
     if (move > 0) {
         move -= 32;
         if (key.push === 'left') pos_x -= 32;
@@ -497,31 +498,36 @@ function timer(ctx) {
         if (key.push === 'down') pos_y += 32;
     }
 
-    // ƒ}ƒbƒv“àƒCƒxƒ“ƒg
+    // ãƒãƒƒãƒ—ã¨ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’æç”»
+    drawMain(ctx);
+    message = "";
+
+    // ãƒãƒƒãƒ—å†…ã‚¤ãƒ™ãƒ³ãƒˆ
     if (curMap === map) {
-        // ƒ}ƒbƒvˆÚ“®
+        // ãƒãƒƒãƒ—ç§»å‹•
         if (pos_x === 960 && pos_y === 288) {
             curMap = map2;
             pos_x = 32;
             pos_y = 288;
         }
-        // HP‚ÆMP‘S‰ñ•œ
+        // HPã¨MPå…¨å›å¾©
         if (pos_x === 768 && pos_y === 224) {
-            // ‰ñ•œŒø‰Ê‰¹
+            message = 'HPã¨MPãŒå›å¾©ã—ãŸï¼';
+            // å›å¾©åŠ¹æœéŸ³
             $('#cure-se').get(0).play();
             myHp = myMhp;
             myMp = myMmp;
         }
     } else if (curMap === map2) {
-        // ƒ}ƒbƒvˆÚ“®
+        // ãƒãƒƒãƒ—ç§»å‹•
         if (pos_x === 0 && pos_y === 288) {
             curMap = map;
             pos_x = 928;
             pos_y = 288;
         }
-        // ƒ}ƒbƒvˆÚ“®
+        // ãƒãƒƒãƒ—ç§»å‹•
         if (pos_x === 160 && pos_y === 256) {
-            // ‰¹Šy‚ÌØ‚è‘Ö‚¦
+            // éŸ³æ¥½ã®åˆ‡ã‚Šæ›¿ãˆ
             $('#field-bgm').get(0).pause();
             $('#field-bgm').get(0).currentTime = 0;
             $('#dungeon-bgm').get(0).play();
@@ -531,9 +537,9 @@ function timer(ctx) {
             changeAngleUp();
         }
     } else if (curMap === map3) {
-        // ƒ}ƒbƒvˆÚ“®
+        // ãƒãƒƒãƒ—ç§»å‹•
         if ((pos_x === 32 || pos_x === 64 || pos_x === 96 || pos_x === 128 || pos_x === 160) && pos_y === 512) {
-            // ‰¹Šy‚ÌØ‚è‘Ö‚¦
+            // éŸ³æ¥½ã®åˆ‡ã‚Šæ›¿ãˆ
             $('#dungeon-bgm').get(0).pause();
             $('#dungeon-bgm').get(0).currentTime = 0;
             $('#field-bgm').get(0).play();
@@ -544,24 +550,26 @@ function timer(ctx) {
         }
         if (pos_x === 832 && pos_y === 384) {
             battleBossFlg = 1;
-            // ƒGƒ“ƒJƒEƒ“ƒgˆ—
+            // ã‚¨ãƒ³ã‚«ã‚¦ãƒ³ãƒˆå‡¦ç†
             encount();
             pos_x = 832;
             pos_y = 416;
         }
     }
 
-    message = pos_x + ' , ' + pos_y;
+//TODO ãƒ‡ãƒãƒƒã‚°ç”¨
+//    message = pos_x + ' , ' + pos_y;
+
 //    ctx.fillText("Code = " + key.keyCode, 20, 120);
 //    ctx.fillText(curPosX + ", " + curPosY + "(" + mouseState + ")", 20, 60);
 //    console.log(pos_x + ' , ' + pos_y);
 }
 
 /**
- * ‰æ–Êƒ[ƒhˆ—
+ * ç”»é¢ãƒ­ãƒ¼ãƒ‰æ™‚å‡¦ç†
  */
 $(window).on('load', function() {
-    // ‰æ‘œ“Ç‚İ‚İ
+    // ç”»åƒèª­ã¿è¾¼ã¿
     loadImage();
 
     canvas = $('#canvas').get(0);
@@ -570,54 +578,59 @@ $(window).on('load', function() {
     $('#canvas').attr('width', canvasWidth);
     $('#canvas').attr('height', canvasHeight);
 
-    // ‰Šúƒ}ƒbƒvİ’è
+    // åˆæœŸãƒãƒƒãƒ—è¨­å®š
     curMap = map;
 
-    // ƒuƒ‰ƒEƒUƒTƒCƒY•ÏXAcanvas‚Ì•‚Æ‚‚³‚ğƒŠƒTƒCƒY
+    // ãƒ–ãƒ©ã‚¦ã‚¶ã‚µã‚¤ã‚ºå¤‰æ›´æ™‚ã€canvasã®å¹…ã¨é«˜ã•ã‚’ãƒªã‚µã‚¤ã‚º
     $(window).on('resize', function(){setSize()});
-    // ˆê’èŠÔŠu‚Åƒ^ƒCƒ}[ƒCƒxƒ“ƒgˆ—‚ğs‚¤
+    // ä¸€å®šé–“éš”ã§ã‚¿ã‚¤ãƒãƒ¼ã‚¤ãƒ™ãƒ³ãƒˆå‡¦ç†ã‚’è¡Œã†
     setInterval(function(){timer(ctx)}, flame);
 });
 
 /**
- * ƒL[“ü—Í(DOWN)ƒCƒxƒ“ƒg
+ * ã‚­ãƒ¼å…¥åŠ›(DOWN)ã‚¤ãƒ™ãƒ³ãƒˆ
  */
 $(window).keydown(function(ev) {
-    //İ’è‰æ–Ê‚ÍƒL[“ü—ÍƒCƒxƒ“ƒg–³Œø‚É‚·‚é
+    //è¨­å®šç”»é¢ã¯ã‚­ãƒ¼å…¥åŠ›ã‚¤ãƒ™ãƒ³ãƒˆç„¡åŠ¹ã«ã™ã‚‹
     if (settingPhase === 1) return;
 
-    // ƒL[ƒR[ƒhæ“¾
+    // ã‚­ãƒ¼ã‚³ãƒ¼ãƒ‰å–å¾—
     var keyCode = ev.keyCode;
-    // •ûŒüƒL[‚Åƒuƒ‰ƒEƒU‚ªƒXƒNƒ[ƒ‹‚µ‚È‚¢‚æ‚¤‚É‚·‚é
+    // æ–¹å‘ã‚­ãƒ¼ã§ãƒ–ãƒ©ã‚¦ã‚¶ãŒã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã—ãªã„ã‚ˆã†ã«ã™ã‚‹
     ev.preventDefault();
 
-    // F5‚ÅƒŠƒ[ƒh‚Å‚«‚é‚æ‚¤‚É‚·‚é
+    // F5ã§ãƒªãƒ­ãƒ¼ãƒ‰ã§ãã‚‹ã‚ˆã†ã«ã™ã‚‹
     if (keyCode === 116) {
         location.reload();
     }
 
-    // ƒGƒ“ƒ^[ƒL[‚ª‰Ÿ‚³‚ê‚½ê‡
+    // ã‚¨ãƒ³ã‚¿ãƒ¼ã‚­ãƒ¼ãŒæŠ¼ã•ã‚ŒãŸå ´åˆ
     if (keyCode === 13) {
-        // í“¬I—¹‚Ì‚İˆ—‚³‚¹‚é
+        // æˆ¦é—˜çµ‚äº†æ™‚ã®ã¿å‡¦ç†ã•ã›ã‚‹
         if (battleEndFlg == 1) {
-            // í“¬‰æ–Ê‚ğ”ñ•\¦
+            // æˆ¦é—˜ç”»é¢ã‚’éè¡¨ç¤º
             $('#main').css('display', 'none');
-            // ƒtƒ‰ƒO‚ğŒ³‚É–ß‚·
+            // ãƒ•ãƒ©ã‚°ã‚’å…ƒã«æˆ»ã™
             encountFlg = 0;
             battleEndFlg = 0;
-            // Œø‰Ê‰¹’â~
+            // åŠ¹æœéŸ³åœæ­¢
             $('#fanfare-se').get(0).pause();
             $('#fanfare-se').get(0).currentTime = 0;
             setTimeout(function() {
-                // ƒtƒB[ƒ‹ƒhBGMÄ¶
+                // ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰BGMå†ç”Ÿ
                 $('#field-bgm').get(0).play();
-                // ƒtƒB[ƒ‹ƒh‰æ–Ê‚ğ•\¦
+                // ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ç”»é¢ã‚’è¡¨ç¤º
                 $('#canvas').css('display', 'block');
             }, 100);
         }
+                // æˆ¦é—˜çµ‚äº†æ™‚ã®ã¿å‡¦ç†ã•ã›ã‚‹
+        if (encountFlg == 1) {
+            message = "";
+            encountFlg = 2;
+        }
     }
 
-    // ˆÚ“®ˆ—
+    // ç§»å‹•å‡¦ç†
     if (keyCode === keyCodeLeft) {
         key.left = true;
     } else if (keyCode === keyCodeUp) {
@@ -630,12 +643,12 @@ $(window).keydown(function(ev) {
 });
 
 /**
- * ƒL[“ü—Í(UP)ƒCƒxƒ“ƒg
+ * ã‚­ãƒ¼å…¥åŠ›(UP)ã‚¤ãƒ™ãƒ³ãƒˆ
  */
 $(window).keyup(function(ev) {
-    // ƒL[ƒR[ƒhæ“¾
+    // ã‚­ãƒ¼ã‚³ãƒ¼ãƒ‰å–å¾—
     var keyCode = ev.keyCode;
-    // ˆÚ“®ˆ—
+    // ç§»å‹•å‡¦ç†
     if (keyCode === keyCodeLeft) {
         key.left = false;
     } else if (keyCode === keyCodeUp) {
@@ -648,7 +661,7 @@ $(window).keyup(function(ev) {
 });
 
 /**
- * ƒ}ƒEƒXˆÚ“®ƒCƒxƒ“ƒg
+ * ãƒã‚¦ã‚¹ç§»å‹•æ™‚ã‚¤ãƒ™ãƒ³ãƒˆ
  */
 //$(window).mousemove(function(ev) {
 //    curPosX = ev.clientX;
@@ -659,14 +672,14 @@ $(window).keyup(function(ev) {
 //});
 
 /**
- * ƒ}ƒEƒXƒ_ƒEƒ“ƒCƒxƒ“ƒg
+ * ãƒã‚¦ã‚¹ãƒ€ã‚¦ãƒ³æ™‚ã‚¤ãƒ™ãƒ³ãƒˆ
  */
 $(window).mousedown(function(ev) {
     mouseState = ev.button;
 });
 
 /**
- * ƒ}ƒEƒXƒAƒbƒvƒCƒxƒ“ƒg
+ * ãƒã‚¦ã‚¹ã‚¢ãƒƒãƒ—æ™‚ã‚¤ãƒ™ãƒ³ãƒˆ
  */
 $(window).mouseup(function(ev) {
     mouseState = -1;

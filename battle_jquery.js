@@ -902,6 +902,8 @@ function init() {
 function loadData() {
     var mydata = "";
     if(!localStorage.getItem('savedata')) {
+        lebel = 1;
+        exp = 0;
     } else {
         mydata = localStorage.getItem('savedata');
         // 配列にする
@@ -945,7 +947,11 @@ function reset() {
     $("#hp").css("color","white");
     $('#myhp-bar').width(Math.floor((myHp / myMhp) * 100) + '%');
     $("#myhp").css("color","white");
-    $('#mymp-bar').width(Math.floor((myMp / myMmp) * 100) + '%');
+    if (myMmp > 0) {
+        $('#mymp-bar').width(Math.floor((myMp / myMmp) * 100) + '%');
+    } else {
+        $('#mymp-bar').width(0);
+    }
 
     // 敵2画像非表示
     $('#img2').css('display', 'none');
